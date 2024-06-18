@@ -28,6 +28,10 @@ Pod::Spec.new do |s|
     ss.exclude_files = [ 'core/src/libzint/**' ]
     ss.private_header_files = 'core/src/**/*.h'
   end
+  s.subspec 'CoreZint' do |ss|
+    ss.source_files = 'core/src/**/*.{h,c,cpp}'
+    ss.private_header_files = 'core/src/**/*.h'
+  end
 
   s.subspec 'Wrapper' do |ss|
     ss.dependency 'zxing-cpp/Core'
