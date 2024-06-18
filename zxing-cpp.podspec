@@ -32,9 +32,17 @@ Pod::Spec.new do |s|
     ss.exclude_files = [ 'core/src/libzint/**' ]
     ss.private_header_files = 'core/src/**/*.h'
   end
+  # core/src/libzint only holds stubs including ../../../zint/backend/..., which break once the
+  # headers are copied into the framework: compile the zint backend sources directly instead
+  zint_sources = %w[2of5inter 2of5inter_based aztec codabar code code128 common dmatrix dxfilmedge eci
+                    filemem general_field gs1 large library maxicode medical output pdf417 qr raster
+                    reedsol rss svg telepen upcean vector].join(',')
   s.subspec 'CoreZint' do |ss|
-    ss.source_files = 'core/src/**/*.{h,c,cpp}'
+    ss.source_files = 'core/src/**/*.{h,c,cpp}', "zint/backend/{#{zint_sources}}.c"
+    ss.exclude_files = 'core/src/libzint/**/*.h', "core/src/libzint/{#{zint_sources}}.c"
     ss.private_header_files = 'core/src/**/*.h'
+    ss.compiler_flags = '-DZINT_NO_PNG'
+    ss.pod_target_xcconfig = { 'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/zint/backend' }
   end
 
   s.subspec 'Wrapper' do |ss|
